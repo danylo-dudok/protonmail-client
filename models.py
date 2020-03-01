@@ -53,7 +53,6 @@ class Mail:
 class Conversation:
     sender: str
     subject: str
-    mail: Mail
 
 
 @dataclass

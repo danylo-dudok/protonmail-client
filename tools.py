@@ -38,3 +38,14 @@ def parse_app_arguments(arguments: List[str]) -> ApplicationArguments:
         username=get_argument_by_name(arguments, '--username'),
         password=get_argument_by_name(arguments, '--password')
     )
+
+
+def decdec(inner_dec):
+    def ddmain(outer_dec):
+        def decwrapper(f):
+            wrapped = inner_dec(outer_dec(f))
+            def fwrapper(*args, **kwargs):
+               return wrapped(*args, **kwargs)
+            return fwrapper
+        return decwrapper
+    return ddmain

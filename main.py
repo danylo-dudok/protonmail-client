@@ -1,13 +1,17 @@
 import sys
-from selenium.webdriver.remote.webdriver import WebDriver
-from client import run_in_browser, get_conversation_elements, get_messages
+import logging
+from client import ProtonClient
+from decorators import run_in_proton
+
+logging.basicConfig(filename='./logs/logs.log', level=logging.DEBUG)
 
 
-@run_in_browser
-def main(driver: WebDriver) -> None:
-    conversation_elements = get_conversation_elements(driver)
-    conversation_elements[0].click()
-    messages = get_messages(driver)
+@run_in_proton
+def main(client: ProtonClient) -> None:
+    conversations = client.get_conversations()
+    conversation = conversations[0]
+    conversation.element.click()
+    messages = [message.mail for message in client.get_messages()]
     print(messages)
 
 
