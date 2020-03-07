@@ -67,10 +67,6 @@ class ProtonClient(Client):
         self._browser.current_session.user_creds = user
 
     def get_conversations(self) -> List[ElementConversation]:
-        conversation_elements = self._browser.find_by_css_selector(
-            '#conversation-list-rows > section > div.conversation',
-            True
-        )
         return [
             ElementConversation(
                 element=item,
@@ -79,13 +75,14 @@ class ProtonClient(Client):
                     subject=item.find_by_css_selector('div.subject > h4 > span.subject-text.ellipsis')[0].text
                 )
             )
-            for item in conversation_elements
+            for item in self._browser.find_by_css_selector(
+                '#conversation-list-rows > section > div.conversation',
+                True
+            )
         ]
 
     def get_messages(self) -> List[ElementMail]:
-        message_elements = self._browser.find_by_css_selector('article.message.hasSender', True)
-        messages = []
-        for el in message_elements:
+        for el in self._browser.find_by_css_selector('article.message.hasSender', True):
             el.click()
             [sender_el] = el.find_by_css_selector(
                 'div.summary > div.summary-left > div.meta > div > div.from-value',
@@ -94,17 +91,13 @@ class ProtonClient(Client):
             [body_el] = el.find_by_css_selector('div.frame.message-frame > div', True)
             [username_el] = sender_el.find_by_tag('strong')
             [email_el] = sender_el.find_by_tag('em')
-            messages.append(
-                ElementMail(
-                    element=el,
-                    mail=Mail(
-                        sender=UserInfo(
-                            username=username_el.text.replace('<', '').replace('>', ''),
-                            email=email_el.text.replace('<', '').replace('>', '')
-                        ),
-                        body=Body(body_el.text)
-                    )
+            yield ElementMail(
+                element=el,
+                mail=Mail(
+                    sender=UserInfo(
+                        username=username_el.text.replace('<', '').replace('>', ''),
+                        email=email_el.text.replace('<', '').replace('>', '')
+                    ),
+                    body=Body(body_el.text)
                 )
             )
-
-        return messages

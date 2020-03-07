@@ -20,15 +20,7 @@ def get_context(path: str) -> Context:
 
 
 def get_argument_by_name(arguments: List[str], name: str):
-    name_index = next((index for index, arg in enumerate(arguments) if arg == name), -1)
-    if name_index < 0:
-        return None
-
-    value_index = name_index + 1
-    if value_index >= len(arguments):
-        return None
-
-    return arguments[value_index]
+    return arguments[arguments.index(name) + 1] if name in arguments else None
 
 
 def parse_app_arguments(arguments: List[str]) -> ApplicationArguments:
